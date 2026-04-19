@@ -1,33 +1,43 @@
-namespace Concurrent_programming.Data
+using System.Diagnostics;
+
+namespace Data
 {
     internal class DataImplementation : DataAbstractAPI
     {
-        private Random _random = new();
-        private List<IBall> _balls = new List<IBall>();
+        private List<IBall> BallsList = new List<IBall>();
 
         public override int Width => 500;
         public override int Height => 400;
         public override double BallRadius => 15.0;
 
-        public override void Start(int numberOfBalls)
+        public override void Start(int numberOfBalls, Action<IVector, IBall> upperLayerHandler)
         {
-            _balls.Clear();
+            BallsList.Clear();
+            Random random = new Random();
             for (int i = 0; i < numberOfBalls; i++)
             {
-                double x = _random.NextDouble() * (Width - 2 * BallRadius) + BallRadius;
-                double y = _random.NextDouble() * (Height - 2 * BallRadius) + BallRadius;
-                _balls.Add(new Ball(x, y, BallRadius));
+                Vector startingPosition = new(random.NextDouble() * (Width - 2 * BallRadius) + BallRadius, random.NextDouble() * (Height - 2 * BallRadius) + BallRadius);
+                Ball newBall = new(startingPosition, BallRadius);
+                upperLayerHandler(startingPosition, newBall);
+                BallsList.Add(newBall);
             }
         }
 
         public override void Dispose()
         {
-            _balls.Clear();
+            BallsList.Clear();
         }
 
-        public override IEnumerable<IBall> GetBalls()
+        [Conditional("DEBUG")]
+        internal void CheckBallsList(Action<IEnumerable<IBall>> returnBallsList)
         {
-            return _balls;
+            returnBallsList(BallsList);
+        }
+
+        [Conditional("DEBUG")]
+        internal void CheckNumberOfBalls(Action<int> returnNumberOfBalls)
+        {
+            returnNumberOfBalls(BallsList.Count);
         }
     }
 }

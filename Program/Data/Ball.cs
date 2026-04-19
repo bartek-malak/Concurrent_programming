@@ -2,45 +2,23 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Concurrent_programming.Data
+namespace Data
 {
-    internal class Ball : IBall
+    public class Ball : IBall
     {
-        private double _x;
-        private double _y;
+        private Vector Position;
         public double Radius { get; }
-        public event EventHandler<BallEventArgs> NewPositionNotification;
+        public event EventHandler<BallEventArgs>? NewPositionNotification;
 
-        internal Ball(double x, double y, double radius)
+        public Ball(Vector position, double radius)
         {
-            _x = x;
-            _y = y;
+            Position = position;
             Radius = radius;
-        }
-
-        public double X
-        {
-            get => _x;
-            set
-            {
-                _x = value;
-                RaiseNewPositionChangeNotification();
-            }
-        }
-
-        public double Y
-        {
-            get => _y;
-            set
-            {
-                _y = value;
-                RaiseNewPositionChangeNotification();
-            }
         }
 
         private void RaiseNewPositionChangeNotification()
         {
-            NewPositionNotification?.Invoke(this, new BallEventArgs(_x, _y));
+            NewPositionNotification?.Invoke(this, new BallEventArgs(Position));
         }
     }
 }
