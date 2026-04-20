@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Data
+namespace BusinessLogic
 {
-    internal record Vector : IVector
+    internal record Position : IPosition
     {
         public double x { get; init; }
         public double y { get; init; }
 
-        public Vector(double XComponent, double YComponent)
+        public Position(double posX, double posY)
         {
-            x = XComponent;
-            y = YComponent;
+            x = posX;
+            y = posY;
         }
     }
 }

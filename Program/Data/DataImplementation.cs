@@ -9,10 +9,14 @@ namespace Data
         public override int Width => 500;
         public override int Height => 400;
         public override double BallRadius => 15.0;
+        private bool Disposed = false;
 
         public override void Start(int numberOfBalls, Action<IVector, IBall> upperLayerHandler)
         {
-            BallsList.Clear();
+            if (Disposed)
+                throw new ObjectDisposedException(nameof(DataImplementation));
+            if (upperLayerHandler == null)
+                throw new ArgumentNullException(nameof(upperLayerHandler));
             Random random = new Random();
             for (int i = 0; i < numberOfBalls; i++)
             {
@@ -23,9 +27,24 @@ namespace Data
             }
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!Disposed)
+            {
+                if (disposing)
+                {
+                    BallsList.Clear();
+                }
+                Disposed = true;
+            }
+            else
+                throw new ObjectDisposedException(nameof(DataImplementation));
+        }
+
         public override void Dispose()
         {
-            BallsList.Clear();
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
         [Conditional("DEBUG")]
@@ -38,6 +57,12 @@ namespace Data
         internal void CheckNumberOfBalls(Action<int> returnNumberOfBalls)
         {
             returnNumberOfBalls(BallsList.Count);
+        }
+
+        [Conditional("DEBUG")]
+        internal void CheckObjectDisposed(Action<bool> returnInstanceDisposed)
+        {
+            returnInstanceDisposed(Disposed);
         }
     }
 }

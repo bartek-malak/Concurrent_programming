@@ -31,9 +31,9 @@ namespace Data
 
     public class BallEventArgs : EventArgs
     {
-        public Vector Position { get; }
+        public IVector Position { get; }
 
-        public BallEventArgs(Vector position)
+        public BallEventArgs(IVector position)
         {
             Position = position;
         }

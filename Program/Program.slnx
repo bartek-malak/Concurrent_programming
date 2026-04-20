@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="BusinessLogic/BusinessLogic.csproj" Id="290cfc1c-b962-48b9-8498-67d9874f8bd1" />
+  <Project Path="BusinessLogicTest/BusinessLogicTest.csproj" Id="719f9ac0-6b0c-4b2b-86f3-05934109e399" />
   <Project Path="Data/Data.csproj" />
   <Project Path="DataTest/DataTest.csproj" Id="54fd4b41-94fd-4528-ad1b-4fc07d6a0cae" />
 </Solution>

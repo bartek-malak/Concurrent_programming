@@ -4,13 +4,13 @@ using System.Text;
 
 namespace Data
 {
-    public class Ball : IBall
+    internal class Ball : IBall
     {
         private Vector Position;
         public double Radius { get; }
         public event EventHandler<BallEventArgs>? NewPositionNotification;
 
-        public Ball(Vector position, double radius)
+        internal Ball(Vector position, double radius)
         {
             Position = position;
             Radius = radius;
