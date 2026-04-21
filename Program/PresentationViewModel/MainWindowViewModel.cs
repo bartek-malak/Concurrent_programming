@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input; // Wymagane dla ICommand
-using TP.ConcurrentProgramming.Presentation.Model;
+using PresentationModel;
 using TP.ConcurrentProgramming.Presentation.ViewModel.MVVMLight;
-using ModelIBall = TP.ConcurrentProgramming.Presentation.Model.IBall;
+using ModelIBall = PresentationModel.IBall;
 
 namespace TP.ConcurrentProgramming.Presentation.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase, IDisposable
     {
+
         #region private fields
         private IDisposable Observer = null;
         private ModelAbstractApi ModelLayer;

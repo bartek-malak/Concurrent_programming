@@ -14,7 +14,7 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
-		<Border Grid.Row="0" BorderThickness="4" BorderBrush="Green" Margin="10" Background="White">
+		<Border Grid.Row="0" BorderThickness="4" BorderBrush="Red" Margin="10" Background="White">
 			<ItemsControl ItemsSource="{Binding Balls}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
