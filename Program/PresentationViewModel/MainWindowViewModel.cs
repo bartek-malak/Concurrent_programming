@@ -68,8 +68,7 @@ namespace PresentationViewModel
                 throw new ObjectDisposedException(nameof(MainWindowViewModel));
 
             ModelLayer.Start(numberOfBalls);
-            // Ważne: w oryginalnym kodzie było Observer.Dispose() - 
-            // usunąłem to stąd, aby UI nadal dostawało powiadomienia o ruchu kul!
+          
         }
         #endregion public API
 

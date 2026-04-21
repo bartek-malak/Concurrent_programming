@@ -6,8 +6,8 @@ namespace Data
     {
         private List<IBall> BallsList = new List<IBall>();
 
-        public override int Width => 500;
-        public override int Height => 400;
+        public override int Width => 50;
+        public override int Height => 50;
         public override double BallRadius => 15.0;
         private bool Disposed = false;
 
