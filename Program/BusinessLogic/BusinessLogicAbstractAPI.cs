@@ -20,7 +20,7 @@ namespace BusinessLogic
         public abstract void Dispose();
 
     }
-    public record Dimensions(double BallRadius, double CanvasHeight, double CanvasWidth);
+    public record Dimensions(double BallRadius, int CanvasHeight, int CanvasWidth);
 
     public interface IPosition
     {

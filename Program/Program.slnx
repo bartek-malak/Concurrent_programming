@@ -3,4 +3,6 @@
   <Project Path="BusinessLogicTest/BusinessLogicTest.csproj" Id="719f9ac0-6b0c-4b2b-86f3-05934109e399" />
   <Project Path="Data/Data.csproj" />
   <Project Path="DataTest/DataTest.csproj" Id="54fd4b41-94fd-4528-ad1b-4fc07d6a0cae" />
+  <Project Path="PresentationModel/PresentationModel.csproj" Id="2752829c-4426-454a-bab7-6267358eb185" />
+  <Project Path="PresentationModelTest/PresentationModelTest.csproj" Id="45ffb8d3-704d-4f9a-9c52-b07f8a1b8f27" />
 </Solution>
