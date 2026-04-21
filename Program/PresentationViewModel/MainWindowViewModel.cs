@@ -10,14 +10,11 @@ namespace PresentationViewModel
     public class MainWindowViewModel : ViewModelBase, IDisposable
     {
 
-        #region private fields
         private IDisposable Observer = null;
         private ModelAbstractApi ModelLayer;
         private bool Disposed = false;
         private int _ballCount; // Pole przechowujące wpisaną liczbę kul
-        #endregion private fields
 
-        #region ctor
         public MainWindowViewModel() : this(null)
         { }
 
@@ -30,9 +27,7 @@ namespace PresentationViewModel
             // Inicjalizacja komendy Start
             StartCommand = new RelayCommand(ExecuteStart);
         }
-        #endregion ctor
 
-        #region properties
         // Właściwość powiązana z TextBox w XAML
         public int BallCount
         {
@@ -48,9 +43,8 @@ namespace PresentationViewModel
         public ICommand StartCommand { get; }
 
         public ObservableCollection<ModelIBall> Balls { get; } = new ObservableCollection<ModelIBall>();
-        #endregion properties
 
-        #region private methods
+
         // Metoda wywoływana przez przycisk START
         private void ExecuteStart()
         {
@@ -59,9 +53,6 @@ namespace PresentationViewModel
             // Uruchamiamy logikę z pobraną wartością BallCount
             Start(BallCount);
         }
-        #endregion private methods
-
-        #region public API
         public void Start(int numberOfBalls)
         {
             if (Disposed)
@@ -70,9 +61,6 @@ namespace PresentationViewModel
             ModelLayer.Start(numberOfBalls);
           
         }
-        #endregion public API
-
-        #region IDisposable
         protected virtual void Dispose(bool disposing)
         {
             if (!Disposed)
@@ -93,6 +81,5 @@ namespace PresentationViewModel
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-        #endregion IDisposable
     }
 }
