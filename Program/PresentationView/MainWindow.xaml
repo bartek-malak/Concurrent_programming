@@ -1,7 +1,7 @@
-﻿<Window x:Class="TP.ConcurrentProgramming.PresentationView.MainWindow"
+﻿<Window x:Class="PresentationView.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:TP.ConcurrentProgramming.Presentation.ViewModel;assembly=TP.ConcurrentProgramming.PresentationViewModel"
+        xmlns:vm="clr-namespace:PresentationViewModel;assembly=TP.ConcurrentProgramming.PresentationViewModel"
         Title="Symulacja Kul" Height="500" Width="450">
 
 	<Window.DataContext>

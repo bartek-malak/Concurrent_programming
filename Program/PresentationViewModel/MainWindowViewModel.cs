@@ -2,10 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input; // Wymagane dla ICommand
 using PresentationModel;
-using TP.ConcurrentProgramming.Presentation.ViewModel.MVVMLight;
+using PresentationViewModel.MVVMLight;
 using ModelIBall = PresentationModel.IBall;
 
-namespace TP.ConcurrentProgramming.Presentation.ViewModel
+namespace PresentationViewModel
 {
     public class MainWindowViewModel : ViewModelBase, IDisposable
     {

@@ -9,9 +9,9 @@
 
 using System;
 using System.Windows;
-using TP.ConcurrentProgramming.Presentation.ViewModel;
+using PresentationViewModel;
 
-namespace TP.ConcurrentProgramming.PresentationView
+namespace PresentationView
 {
   /// <summary>
   /// View implementation

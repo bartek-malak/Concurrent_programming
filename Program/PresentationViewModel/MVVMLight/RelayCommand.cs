@@ -11,7 +11,7 @@
 using System;
 using System.Windows.Input;
 
-namespace TP.ConcurrentProgramming.Presentation.ViewModel.MVVMLight
+namespace PresentationViewModel.MVVMLight
 {
   /// <summary>
   /// A generic command whose sole purpose is to relay its functionality to other
