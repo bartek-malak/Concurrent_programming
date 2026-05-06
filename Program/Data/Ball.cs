@@ -6,38 +6,51 @@ namespace Data
 {
     internal class Ball : IBall
     {
-        private Vector Position;
+        public IVector Position { get; private set; }
+        public IVector Velocity { get; set; }
+        public double Mass { get; }
         public double Radius { get; }
-        public event EventHandler<BallEventArgs>? NewPositionNotification;
 
-        internal Ball(Vector position, double radius)
+        public event EventHandler<BallEventArgs>? NewPositionNotification;
+        private bool _isRunning = false;
+
+        internal Ball(Vector position, double radius, Vector velocity, double mass)
         {
             Position = position;
             Radius = radius;
+            Velocity = velocity;
+            Mass = mass;
         }
 
         private void RaiseNewPositionChangeNotification()
         {
-            NewPositionNotification?.Invoke(this, new BallEventArgs(Position));
+            NewPositionNotification?.Invoke(this, new BallEventArgs(Position, Velocity, Mass, Radius));
         }
 
-        internal void Move(Vector delta, int maxWidth, int maxHeight)
+        internal void Move()
         {
-            // Obliczamy nową potencjalną pozycję
-            double newX = Position.x + delta.x;
-            double newY = Position.y + delta.y;
+            // Obliczamy nową pozycję
+            double newX = Position.x + Velocity.x;
+            double newY = Position.y + Velocity.y;
 
-            // Pilnujemy lewej i prawej krawędzi
-            if (newX - Radius < 0) newX = Radius;
-            else if (newX + Radius > maxWidth) newX = maxWidth - Radius;
-
-            // Pilnujemy górnej i dolnej krawędzi
-            if (newY - Radius < 0) newY = Radius;
-            else if (newY + Radius > maxHeight) newY = maxHeight - Radius;
-
-            // Zapisujemy skorygowaną pozycję
+            // Zapisujemy pozycję
             Position = new Vector(newX, newY);
             RaiseNewPositionChangeNotification();
+        }
+
+        public void StartMovement()
+        {
+            _isRunning = true;
+
+            Task.Run(async () =>
+            {
+                while (_isRunning)
+                {
+                    Move();
+
+                    await Task.Delay(16);
+                }
+            });
         }
     }
 }

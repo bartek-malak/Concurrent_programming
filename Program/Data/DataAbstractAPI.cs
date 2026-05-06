@@ -13,14 +13,21 @@ namespace Data
 
         public abstract int Width { get; }
         public abstract int Height { get; }
-        public abstract double BallRadius { get; }
 
         public abstract void Dispose();
+
+        public abstract IEnumerable<IBall> GetBalls();
     }
 
     public interface IBall
     {
+        IVector Position { get; }
+        IVector Velocity { get; set; }
+        double Mass { get; }
+        double Radius { get; }
+
         event EventHandler<BallEventArgs> NewPositionNotification;
+
     }
 
     public interface IVector
@@ -32,10 +39,16 @@ namespace Data
     public class BallEventArgs : EventArgs
     {
         public IVector Position { get; }
+        public IVector Velocity { get; }
+        public double Mass { get; }
+        public double Radius { get; }
 
-        public BallEventArgs(IVector position)
+        public BallEventArgs(IVector position, IVector velocity, double mass, double radius)
         {
             Position = position;
+            Velocity = velocity;
+            Mass = mass;
+            Radius = radius;
         }
     }
 }

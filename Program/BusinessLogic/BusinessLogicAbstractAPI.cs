@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
+using Data;
 
 namespace BusinessLogic
 {
@@ -30,6 +31,11 @@ namespace BusinessLogic
 
     public interface IBall
     {
+        IPosition Position { get; }
+        IPosition Velocity { get; set; }
+        double Mass { get; }
+        double Radius { get; }
+
         event EventHandler<LogicBallEventArgs> NewPositionNotification;
     }
 
