@@ -39,16 +39,10 @@ namespace Data
     public class BallEventArgs : EventArgs
     {
         public IVector Position { get; }
-        public IVector Velocity { get; }
-        public double Mass { get; }
-        public double Radius { get; }
 
-        public BallEventArgs(IVector position, IVector velocity, double mass, double radius)
+        public BallEventArgs(IVector position)
         {
             Position = position;
-            Velocity = velocity;
-            Mass = mass;
-            Radius = radius;
         }
     }
 }

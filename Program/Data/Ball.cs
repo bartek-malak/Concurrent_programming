@@ -24,7 +24,7 @@ namespace Data
 
         private void RaiseNewPositionChangeNotification()
         {
-            NewPositionNotification?.Invoke(this, new BallEventArgs(Position, Velocity, Mass, Radius));
+            NewPositionNotification?.Invoke(this, new BallEventArgs(Position));
         }
 
         internal void Move()

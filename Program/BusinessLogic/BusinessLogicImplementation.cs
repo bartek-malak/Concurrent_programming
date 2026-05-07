@@ -34,7 +34,6 @@ namespace BusinessLogic
                 throw new ObjectDisposedException(nameof(BusinessLogicImplementation));
 
             return new Dimensions(
-                layerBellow.BallRadius,
                 layerBellow.Height,
                 layerBellow.Width
             );
@@ -53,17 +52,13 @@ namespace BusinessLogic
                 var logicBall = new Ball(databall);
                 _logicBallsList.Add(logicBall);
 
+                logicBall.NewPositionNotification += OnBallMoved;
+
                 upperLayerHandler(new Position(startingPosition.x, startingPosition.y), logicBall);
             });
         }
 
-        private void OnDataBallCreated(IVector position, Data.IBall dataBall)
-        {
-            var logicBall = new Ball(dataBall);
-            _logicBallsList.Add(logicBall);
-        }
-
-        private void OnBallMoved(object? sender, BallEventArgs e)
+        private void OnBallMoved(object? sender, LogicBallEventArgs e)
         {
             if (sender is IBall ball)
             {

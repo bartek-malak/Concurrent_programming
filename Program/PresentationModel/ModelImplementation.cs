@@ -26,8 +26,6 @@ namespace PresentationModel
 
         public override int Height => layerBellow.GetDimensions().CanvasHeight;
 
-        public override double BallRadius => layerBellow.GetDimensions().BallRadius;
-
         public override void Dispose()
         {
             if (Disposed)
@@ -48,7 +46,7 @@ namespace PresentationModel
 
         private void StartHandler(BusinessLogic.IPosition position, BusinessLogic.IBall ball)
         {
-            double currentDiameter = layerBellow.GetDimensions().BallRadius * 2;
+            double currentDiameter = ball.Radius * 2;
             ModelBall newBall = new ModelBall(position.y, position.x, ball) { Diameter = currentDiameter };
             BallChanged?.Invoke(this, new () { Ball = newBall });
         }

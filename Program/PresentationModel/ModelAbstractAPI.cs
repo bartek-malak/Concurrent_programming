@@ -8,7 +8,6 @@ namespace PresentationModel
 
         public abstract int Width { get; }
         public abstract int Height { get; }
-        public abstract double BallRadius { get; }
         public static ModelAbstractApi CreateModel()
         {
             return modelInstance.Value;

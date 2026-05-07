@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input; // Wymagane dla ICommand
 using PresentationModel;
 using PresentationViewModel.MVVMLight;
 using ModelIBall = PresentationModel.IBall;
+
 
 namespace PresentationViewModel
 {
@@ -15,14 +18,25 @@ namespace PresentationViewModel
         private bool Disposed = false;
         private int _ballCount; // Pole przechowujące wpisaną liczbę kul
 
+        // Przechowuje kontekst głównego wątku UI
+        private readonly SynchronizationContext _syncContext;
+
         public MainWindowViewModel() : this(null)
         { }
 
         internal MainWindowViewModel(ModelAbstractApi modelLayerAPI)
         {
             ModelLayer = modelLayerAPI == null ? ModelAbstractApi.CreateModel() : modelLayerAPI;
-            // Rejestrujemy obserwatora, który doda każdą nową kulę do kolekcji widocznej w UI
-            Observer = ModelLayer.Subscribe<ModelIBall>(x => Balls.Add(x));
+
+            // Pobieramy kontekst w momencie tworzenia ViewModelu (tworzy się on na wątku UI)
+            _syncContext = SynchronizationContext.Current;
+
+            // Zmieniona subskrypcja z użyciem _syncContext
+            Observer = ModelLayer.Subscribe<ModelIBall>(x =>
+            {
+                // Post działa tak samo jak Dispatcher.Invoke - wrzuca zadanie na wątek UI
+                _syncContext?.Post(_ => Balls.Add(x), null);
+            });
 
             // Inicjalizacja komendy Start
             StartCommand = new RelayCommand(ExecuteStart);
@@ -46,12 +60,19 @@ namespace PresentationViewModel
 
 
         // Metoda wywoływana przez przycisk START
-        private void ExecuteStart()
+        private async void ExecuteStart()
         {
             // Czyścimy poprzednie kule przed nowym startem
             Balls.Clear();
-            // Uruchamiamy logikę z pobraną wartością BallCount
-            Start(BallCount);
+
+            // Zapisujemy wartość do lokalnej zmiennej przed wejściem w Task
+            int count = BallCount;
+
+            // Uruchamiamy tworzenie kul w tle! UI pozostaje responsywne.
+            await Task.Run(() =>
+            {
+                Start(count);
+            });
         }
         public void Start(int numberOfBalls)
         {
