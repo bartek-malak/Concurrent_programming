@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System;
+using System.Collections.Generic;
 
 namespace Data
 {
@@ -9,6 +10,7 @@ namespace Data
 
         public override int Width => 370;
         public override int Height => 310;
+        public override double BallRadius => 10.0;
 
         private bool Disposed = false;
 
@@ -33,7 +35,7 @@ namespace Data
             Random random = new Random();
             for (int i = 0; i < numberOfBalls; i++)
             {
-                double BallRadius = 10.0;
+                double ballRadius = BallRadius;
                 double mass = 10.0;
                 Vector startingPosition = new(random.NextDouble() * (Width - 2 * BallRadius) + BallRadius, random.NextDouble() * (Height - 2 * BallRadius) + BallRadius);
                 Vector startingVelocity = new((random.NextDouble() * 10) - 5, (random.NextDouble() * 10) - 5);

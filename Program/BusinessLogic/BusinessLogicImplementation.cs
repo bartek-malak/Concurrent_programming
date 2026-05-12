@@ -36,6 +36,7 @@ namespace BusinessLogic
             return new Dimensions(
                 layerBellow.Height,
                 layerBellow.Width
+                , layerBellow.BallRadius
             );
         }
 

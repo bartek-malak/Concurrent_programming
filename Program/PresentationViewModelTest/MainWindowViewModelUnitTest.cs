@@ -62,9 +62,7 @@ namespace PresentationViewModel.Test
 
             public override int Height => throw new NotImplementedException();
 
-            public override double BallRadius => throw new NotImplementedException();
-
-            public override void Dispose()
+      public override void Dispose()
       {
         Disposed++;
       }
@@ -124,8 +122,6 @@ namespace PresentationViewModel.Test
             public override int Width => throw new NotImplementedException();
 
             public override int Height => throw new NotImplementedException();
-
-            public override double BallRadius => throw new NotImplementedException();
 
             private class ModelBall : ModelIBall
       {

@@ -67,13 +67,13 @@ namespace BusinessLogic.Test
 
         // Fixture
 
-        private class DataLayerConstructorFixture : Data.DataAbstractAPI
+        private class DataLayerConstructorFixture : DataAbstractAPI
         {
-            public override int Width => throw new NotImplementedException();
+            public override int Width { get { throw new NotImplementedException(); } }
 
-            public override int Height => throw new NotImplementedException();
+            public override int Height { get { throw new NotImplementedException(); } }
 
-            public override double BallRadius => throw new NotImplementedException();
+            public override double BallRadius { get { throw new NotImplementedException(); } }
 
             public override void Dispose()
             { }
@@ -82,17 +82,20 @@ namespace BusinessLogic.Test
             {
                 throw new NotImplementedException();
             }
+
+            public override System.Collections.Generic.IEnumerable<Data.IBall> GetBalls()
+                => System.Array.Empty<Data.IBall>();
         }
 
-        private class DataLayerDisposeFixture : Data.DataAbstractAPI
+        private class DataLayerDisposeFixture : DataAbstractAPI
         {
             internal bool Disposed = false;
 
-            public override int Width => throw new NotImplementedException();
+            public override int Width { get { throw new NotImplementedException(); } }
 
-            public override int Height => throw new NotImplementedException();
+            public override int Height { get { throw new NotImplementedException(); } }
 
-            public override double BallRadius => throw new NotImplementedException();
+            public override double BallRadius { get { throw new NotImplementedException(); } }
 
             public override void Dispose()
             {
@@ -103,16 +106,19 @@ namespace BusinessLogic.Test
             {
                 throw new NotImplementedException();
             }
+
+            public override System.Collections.Generic.IEnumerable<Data.IBall> GetBalls()
+                => System.Array.Empty<Data.IBall>();
         }
 
-        private class DataLayerStartFixture : Data.DataAbstractAPI
+        private class DataLayerStartFixture : DataAbstractAPI
         {
             internal bool StartCalled = false;
             internal int NumberOfBallseCreated = -1;
 
-            public override int Width => 500;
-            public override int Height => 400;
-            public override double BallRadius => 15.0;
+            public override int Width { get { return 500; } }
+            public override int Height { get { return 400; } }
+            public override double BallRadius { get { return 15.0; } }
 
             public override void Dispose()
             { }
@@ -124,6 +130,9 @@ namespace BusinessLogic.Test
                 upperLayerHandler(new DataVectorFixture(), new DataBallFixture());
             }
 
+            public override System.Collections.Generic.IEnumerable<Data.IBall> GetBalls()
+                => System.Array.Empty<Data.IBall>();
+
             private record DataVectorFixture : Data.IVector
             {
                 public double x { get; init; }
@@ -132,7 +141,22 @@ namespace BusinessLogic.Test
 
             private class DataBallFixture : Data.IBall
             {
+                public DataBallFixture()
+                {
+                    Position = new DataVectorFixture();
+                    Velocity = new DataVectorFixture();
+                    Mass = 1.0;
+                    Radius = 1.0;
+                }
+
+                public Data.IVector Position { get; }
+                public Data.IVector Velocity { get; set; }
+                public double Mass { get; }
+                public double Radius { get; }
+
                 public event EventHandler<BallEventArgs>? NewPositionNotification = null;
+
+                public void Dispose() { }
             }
         }
     }

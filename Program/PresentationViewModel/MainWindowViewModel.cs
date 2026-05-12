@@ -35,7 +35,12 @@ namespace PresentationViewModel
             Observer = ModelLayer.Subscribe<ModelIBall>(x =>
             {
                 // Post działa tak samo jak Dispatcher.Invoke - wrzuca zadanie na wątek UI
-                _syncContext?.Post(_ => Balls.Add(x), null);
+                // Jeśli nie ma kontekstu synchronizacji (np. w testach jednostkowych),
+                // dodajemy bezpośrednio aby kolekcja otrzymała elementy.
+                if (_syncContext != null)
+                    _syncContext.Post(_ => Balls.Add(x), null);
+                else
+                    Balls.Add(x);
             });
 
             // Inicjalizacja komendy Start

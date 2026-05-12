@@ -1,4 +1,5 @@
-﻿using BusinessLogic;
+﻿using System;
+using BusinessLogic;
 
 namespace PresentationModel.Test
 {
@@ -35,11 +36,22 @@ namespace PresentationModel.Test
 
         private class BusinessLogicIBallFixture : BusinessLogic.IBall
         {
-            public event EventHandler<LogicBallEventArgs>? NewPositionNotification;
+            public event EventHandler<LogicBallEventArgs> NewPositionNotification;
+
+            // Simple implementation of IPosition for the fixture
+            private record PositionImpl(double x, double y) : IPosition;
+
+            public IPosition Position { get; private set; } = new PositionImpl(0.0, 0.0);
+
+            public IPosition Velocity { get; set; } = new PositionImpl(0.0, 0.0);
+
+            public double Mass { get; } = 1.0;
+
+            public double Radius { get; } = 1.0;
 
             public void Dispose()
             {
-                throw new NotImplementedException();
+                // no-op for fixture
             }
         }
     }

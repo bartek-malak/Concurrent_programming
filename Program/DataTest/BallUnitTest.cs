@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Data;
 
-namespace Data.Test
+namespace DataTest
 {
     [TestClass]
     public class BallUnitTest
@@ -8,9 +9,10 @@ namespace Data.Test
         [TestMethod]
         public void ConstructorTestMethod()
         {
-            Vector testinVector = new Vector(0.0, 0.0);
+            var testinVector = new Vector(0.0, 0.0);
             double radius = 1.0;
-            Ball newInstance = new(testinVector, radius);
+            // Provide required velocity and mass parameters and discard the instance to avoid unused-assignment warning
+            _ = new Ball(testinVector, radius, new Vector(0.0, 0.0), 1.0);
         }
     }
 }
