@@ -64,5 +64,33 @@ namespace Data.Test
                 newInstance.CheckNumberOfBalls(x => Assert.AreEqual<int>(10, x));
             }
         }
+
+        [TestMethod]
+        public void Start_DoesNotGenerateBallsOutsideArea()
+        {
+            using (DataImplementation instance = new DataImplementation())
+            {
+                var positions = new System.Collections.Generic.List<(double x, double y)>();
+                int createCount = 1000;
+                int width = instance.Width;
+                int height = instance.Height;
+                double radius = instance.BallRadius;
+
+                instance.Start(createCount, (startingPosition, ball) =>
+                {
+                    positions.Add((startingPosition.x, startingPosition.y));
+                });
+
+                Assert.AreEqual<int>(createCount, positions.Count);
+
+                foreach (var p in positions)
+                {
+                    Assert.IsGreaterThanOrEqualTo(radius, p.x);
+                    Assert.IsLessThanOrEqualTo(width - radius, p.x);
+                    Assert.IsGreaterThanOrEqualTo(radius, p.y);
+                    Assert.IsLessThanOrEqualTo(height - radius, p.y);
+                }
+            }
+        }
     }
 }

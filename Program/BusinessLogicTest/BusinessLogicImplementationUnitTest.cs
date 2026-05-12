@@ -62,6 +62,36 @@ namespace BusinessLogic.Test
             }
         }
 
+        [TestMethod]
+        public void CollisionChangesDirectionTest()
+        {
+            // Fixture sets two balls headed towards each other
+            DataLayerCollisionFixture fixture = new();
+            using (BusinessLogicImplementation logic = new(fixture))
+            {
+                var received = new System.Collections.Generic.List<BusinessLogic.IBall>();
+                logic.Start(2, (pos, ball) => received.Add(ball));
+
+                Assert.AreEqual<int>(2, received.Count);
+
+                // initial velocities should be towards each other on X axis
+                double v0x_before = received[0].Velocity.x;
+                double v1x_before = received[1].Velocity.x;
+                Assert.IsTrue(v0x_before > 0);
+                Assert.IsTrue(v1x_before < 0);
+
+                // Trigger movement on one data ball to cause collision handling
+                fixture.RaisePositionNotificationForBall(0);
+
+                // After collision they should have reversed directions
+                double v0x_after = received[0].Velocity.x;
+                double v1x_after = received[1].Velocity.x;
+
+                Assert.IsTrue(v0x_after < 0, "First ball did not reverse X velocity");
+                Assert.IsTrue(v1x_after > 0, "Second ball did not reverse X velocity");
+            }
+        }
+
 
 
 
@@ -157,6 +187,61 @@ namespace BusinessLogic.Test
                 public event EventHandler<BallEventArgs>? NewPositionNotification = null;
 
                 public void Dispose() { }
+            }
+        }
+
+        private class DataLayerCollisionFixture : DataAbstractAPI
+        {
+            private DataBallCollision[] balls = new DataBallCollision[2];
+            public DataLayerCollisionFixture()
+            {
+                balls[0] = new DataBallCollision() { Position = new DataVectorCollision(100, 50), Velocity = new DataVectorCollision(5, 0), Mass = 1.0, Radius = 5 };
+                balls[1] = new DataBallCollision() { Position = new DataVectorCollision(110, 50), Velocity = new DataVectorCollision(-5, 0), Mass = 1.0, Radius = 5 };
+            }
+
+            public override int Width => 200;
+            public override int Height => 200;
+            public override double BallRadius => 5.0;
+
+            public override void Dispose() { }
+
+            public override void Start(int numberOfBalls, Action<IVector, Data.IBall> upperLayerHandler)
+            {
+                for (int i = 0; i < balls.Length; i++)
+                {
+                    upperLayerHandler(balls[i].Position, balls[i]);
+                }
+            }
+
+            public void RaisePositionNotificationForBall(int index)
+            {
+                balls[index].RaiseNewPosition(new BallEventArgs(balls[index].Position));
+            }
+
+            public override System.Collections.Generic.IEnumerable<Data.IBall> GetBalls() => balls;
+
+            private record DataVectorCollision : Data.IVector
+            {
+                public DataVectorCollision() { }
+                public DataVectorCollision(double x, double y) { this.x = x; this.y = y; }
+                public double x { get; init; }
+                public double y { get; init; }
+            }
+
+            private class DataBallCollision : Data.IBall
+            {
+                public DataBallCollision() { }
+                public Data.IVector Position { get; init; }
+                public Data.IVector Velocity { get; set; }
+                public double Mass { get; init; }
+                public double Radius { get; init; }
+                public event EventHandler<BallEventArgs>? NewPositionNotification;
+                public void Dispose() { }
+
+                public void RaiseNewPosition(BallEventArgs e)
+                {
+                    NewPositionNotification?.Invoke(this, e);
+                }
             }
         }
     }
