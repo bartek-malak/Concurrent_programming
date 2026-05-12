@@ -11,7 +11,6 @@ namespace Data
         public override int Height => 310;
 
         private bool Disposed = false;
-        private Random RandomGenerator = new();
 
 
         public DataImplementation()
@@ -24,6 +23,12 @@ namespace Data
                 throw new ObjectDisposedException(nameof(DataImplementation));
             if (upperLayerHandler == null)
                 throw new ArgumentNullException(nameof(upperLayerHandler));
+
+            foreach (var oldBall in BallsList)
+            {
+                oldBall.Dispose();
+            }
+            BallsList.Clear();
 
             Random random = new Random();
             for (int i = 0; i < numberOfBalls; i++)

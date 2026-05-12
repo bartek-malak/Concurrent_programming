@@ -65,27 +65,38 @@ namespace BusinessLogic
                 // SEKCJA KRYTYCZNA - blokujemy dostęp dla innych wątków na czas obliczeń
                 lock (_collisionLock)
                 {
-                    CheckWallCollisions(ball);
                     CheckBallCollisions(ball);
+                    CheckWallCollisions(ball);
                 }
             }
         }
 
         private void CheckWallCollisions(IBall ball)
         {
+            int boardWidth = layerBellow.Width;
+            int boardHeight = layerBellow.Height;
+
             double newVelX = ball.Velocity.x;
             double newVelY = ball.Velocity.y;
 
-            // Prawa i lewa ściana
-            if (ball.Position.x + ball.Radius >= layerBellow.Width || ball.Position.x - ball.Radius <= 0)
+            // PRAWA i LEWA ściana (zabezpieczone znakiem prędkości)
+            if (ball.Position.x + ball.Radius >= boardWidth && newVelX > 0)
             {
-                newVelX = -ball.Velocity.x; // Odwracamy kierunek X
+                newVelX = -newVelX;
+            }
+            else if (ball.Position.x - ball.Radius <= 0 && newVelX < 0)
+            {
+                newVelX = -newVelX;
             }
 
-            // Dolna i górna ściana
-            if (ball.Position.y + ball.Radius >= layerBellow.Height || ball.Position.y - ball.Radius <= 0)
+            // DOLNA i GÓRNA ściana (zabezpieczone znakiem prędkości)
+            if (ball.Position.y + ball.Radius >= boardHeight && newVelY > 0)
             {
-                newVelY = -ball.Velocity.y; // Odwracamy kierunek Y
+                newVelY = -newVelY;
+            }
+            else if (ball.Position.y - ball.Radius <= 0 && newVelY < 0)
+            {
+                newVelY = -newVelY;
             }
 
             // Jeśli wektor się zmienił to przypisujemy nowy
@@ -99,35 +110,49 @@ namespace BusinessLogic
         {
             foreach (var otherBall in _logicBallsList)
             {
-                if (currentBall == otherBall) continue; // Nie sprawdza kolizji sama z sobą
+                if (currentBall == otherBall) continue;
 
-                double dx = otherBall.Position.x - currentBall.Position.x;
-                double dy = otherBall.Position.y - currentBall.Position.y;
-                double distance = Math.Sqrt(dx * dx + dy * dy);
+                // Wektor różnicy pozycji (x1 - x2) i (y1 - y2)
+                double dx = currentBall.Position.x - otherBall.Position.x;
+                double dy = currentBall.Position.y - otherBall.Position.y;
 
-                // Czy kule się stykają lub nachodzą na siebie?
-                if (distance <= currentBall.Radius + otherBall.Radius)
+                // Odległość między środkami do kwadratu
+                double distanceSquared = dx * dx + dy * dy;
+                double radiusSum = currentBall.Radius + otherBall.Radius;
+
+                // Czy kule na siebie nachodzą?
+                if (distanceSquared <= radiusSum * radiusSum) // Używamy kwadratów, by uniknąć wolnego Math.Sqrt
                 {
+                    // Wektor różnicy prędkości (v1 - v2)
+                    double dvx = currentBall.Velocity.x - otherBall.Velocity.x;
+                    double dvy = currentBall.Velocity.y - otherBall.Velocity.y;
 
-                    // OBLICZANIE NOWYCH PRĘDKOŚCI (Zderzenie sprężyste w 1D uproszczone dla wektorów X i Y)
-                    // Korzystamy z prawa zachowania pędu:
-                    double m1 = currentBall.Mass;
-                    double m2 = otherBall.Mass;
+                    // ILOCZYN SKALARNY (Dot Product) wektora prędkości i pozycji
+                    double dotProduct = dvx * dx + dvy * dy;
 
-                    double v1x = currentBall.Velocity.x;
-                    double v2x = otherBall.Velocity.x;
+                    // Jeśli dotProduct > 0, to kule już się od siebie oddalają
+                    // Przerywamy obliczenia, żeby nie odwrócić wektorów po raz drugi (zapobiega sklejaniu).
+                    if (dotProduct > 0)
+                        continue;
 
-                    double v1y = currentBall.Velocity.y;
-                    double v2y = otherBall.Velocity.y;
+                    // KOLIZJE
+                    double totalMass = currentBall.Mass + otherBall.Mass;
 
-                    // Wzory na nowe prędkości:
-                    double newV1x = (v1x * (m1 - m2) + 2 * m2 * v2x) / (m1 + m2);
-                    double newV1y = (v1y * (m1 - m2) + 2 * m2 * v2y) / (m1 + m2);
+                    // Współczynnik dla pierwszej kuli: (2 * m2 / (m1 + m2)) * (dotProduct / distanceSquared)
+                    double collisionScale1 = (2 * otherBall.Mass / totalMass) * (dotProduct / distanceSquared);
 
-                    double newV2x = (v2x * (m2 - m1) + 2 * m1 * v1x) / (m1 + m2);
-                    double newV2y = (v2y * (m2 - m1) + 2 * m1 * v1y) / (m1 + m2);
+                    // Współczynnik dla drugiej kuli: (2 * m1 / (m1 + m2)) * (dotProduct / distanceSquared)
+                    double collisionScale2 = (2 * currentBall.Mass / totalMass) * (dotProduct / distanceSquared);
 
-                    // Przypisanie nowych wektorów
+                    // Obliczenie nowych wektorów (v1' = v1 - scale * dx)
+                    double newV1x = currentBall.Velocity.x - collisionScale1 * dx;
+                    double newV1y = currentBall.Velocity.y - collisionScale1 * dy;
+
+                    // Dla drugiej kuli dodajemy (zamiast odejmować), bo różnica pozycji x2-x1 to -dx
+                    double newV2x = otherBall.Velocity.x + collisionScale2 * dx;
+                    double newV2y = otherBall.Velocity.y + collisionScale2 * dy;
+
+                    // Przypisanie nowych prędkości
                     currentBall.Velocity = new Position(newV1x, newV1y);
                     otherBall.Velocity = new Position(newV2x, newV2y);
                 }

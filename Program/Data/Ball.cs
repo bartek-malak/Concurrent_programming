@@ -52,5 +52,10 @@ namespace Data
                 }
             });
         }
+
+        public void Dispose()
+        {
+            _isRunning = false;
+        }
     }
 }

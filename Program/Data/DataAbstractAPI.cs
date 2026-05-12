@@ -28,6 +28,7 @@ namespace Data
 
         event EventHandler<BallEventArgs> NewPositionNotification;
 
+        void Dispose();
     }
 
     public interface IVector

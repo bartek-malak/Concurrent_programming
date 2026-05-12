@@ -62,13 +62,10 @@ namespace PresentationViewModel
         // Metoda wywoływana przez przycisk START
         private async void ExecuteStart()
         {
-            // Czyścimy poprzednie kule przed nowym startem
             Balls.Clear();
-
-            // Zapisujemy wartość do lokalnej zmiennej przed wejściem w Task
             int count = BallCount;
 
-            // Uruchamiamy tworzenie kul w tle! UI pozostaje responsywne.
+            // Uruchamiamy tworzenie kul w tle - UI pozostaje responsywne.
             await Task.Run(() =>
             {
                 Start(count);
