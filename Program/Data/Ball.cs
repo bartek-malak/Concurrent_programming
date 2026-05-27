@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Data
@@ -44,10 +45,34 @@ namespace Data
 
             Task.Run(async () =>
             {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+
                 while (_isRunning)
                 {
-                    Move();
+                    // Pobieramy dokładny czas, jaki upłynął od ostatniego obrotu pętli (w sekundach)
+                    double deltaTime = stopwatch.Elapsed.TotalSeconds;
 
+                    // Resetujemy stoper żeby mierzył czas do następnej klatki
+                    stopwatch.Restart();
+
+                    // Zabezpieczenie (gdyby pierwszy obrót wykonał się w 0 sekund)
+                    if (deltaTime == 0)
+                    {
+                        deltaTime = 0.016; // 60 klatek na sekundę
+                    }
+
+                    // Nowa pozycja = aktualna pozycja + (Prędkość * czas, który upłynął)
+                    double newX = Position.x + (Velocity.x * deltaTime);
+                    double newY = Position.y + (Velocity.y * deltaTime);
+
+                    // Aktualizujemy pozycję
+                    Position = new Vector(newX, newY);
+
+                    // Powiadamiamy warstwę wyższą o zmianie pozycji
+                    NewPositionNotification?.Invoke(this, new BallEventArgs(Position));
+
+                    // Jeśli procesor się spóźni to i tak stoper nadgoni w kolejnym kroku - zmierzy większy deltaTime.
                     await Task.Delay(16);
                 }
             });

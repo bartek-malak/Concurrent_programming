@@ -38,7 +38,7 @@ namespace Data
                 double ballRadius = BallRadius;
                 double mass = 10.0;
                 Vector startingPosition = new(random.NextDouble() * (Width - 2 * BallRadius) + BallRadius, random.NextDouble() * (Height - 2 * BallRadius) + BallRadius);
-                Vector startingVelocity = new((random.NextDouble() * 10) - 5, (random.NextDouble() * 10) - 5);
+                Vector startingVelocity = new((random.NextDouble() * 10) - 100, (random.NextDouble() * 10) - 100);
                 
                 Ball newBall = new(startingPosition, BallRadius, startingVelocity, mass);
                 BallsList.Add(newBall);
