@@ -13,6 +13,7 @@ namespace Data
         public override double BallRadius => 10.0;
 
         private bool Disposed = false;
+        private readonly Logger _logger = new Logger();
 
 
         public DataImplementation()
@@ -40,7 +41,7 @@ namespace Data
                 Vector startingPosition = new(random.NextDouble() * (Width - 2 * BallRadius) + BallRadius, random.NextDouble() * (Height - 2 * BallRadius) + BallRadius);
                 Vector startingVelocity = new((random.NextDouble() * 10) - 100, (random.NextDouble() * 10) - 100);
                 
-                Ball newBall = new(startingPosition, BallRadius, startingVelocity, mass);
+                Ball newBall = new(startingPosition, BallRadius, startingVelocity, mass, _logger);
                 BallsList.Add(newBall);
                 upperLayerHandler(startingPosition, newBall);
                 newBall.StartMovement();
@@ -56,6 +57,7 @@ namespace Data
                     BallsList.Clear();
                 }
                 Disposed = true;
+                _logger.Dispose();
             }
             else
                 throw new ObjectDisposedException(nameof(DataImplementation));

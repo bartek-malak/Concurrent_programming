@@ -14,13 +14,15 @@ namespace Data
 
         public event EventHandler<BallEventArgs>? NewPositionNotification;
         private bool _isRunning = false;
+        private readonly Logger _logger;
 
-        internal Ball(Vector position, double radius, Vector velocity, double mass)
+        internal Ball(Vector position, double radius, Vector velocity, double mass, Logger logger)
         {
             Position = position;
             Radius = radius;
             Velocity = velocity;
             Mass = mass;
+            _logger = logger;
         }
 
         private void RaiseNewPositionChangeNotification()
@@ -68,6 +70,15 @@ namespace Data
 
                     // Aktualizujemy pozycję
                     Position = new Vector(newX, newY);
+
+                    _logger.Log(new
+                    {
+                        BallId = this.GetHashCode(),
+                        X = Math.Round(Position.x, 2),
+                        Y = Math.Round(Position.y, 2),
+                        VelX = Math.Round(Velocity.x, 2),
+                        VelY = Math.Round(Velocity.y, 2)
+                    });
 
                     // Powiadamiamy warstwę wyższą o zmianie pozycji
                     NewPositionNotification?.Invoke(this, new BallEventArgs(Position));
