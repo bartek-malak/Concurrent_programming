@@ -33,27 +33,42 @@ namespace Data
         // Pętla naszego konsumenta
         private async Task LogLoop()
         {
-            // Otwieramy plik do dopisywania (Append)
-            using StreamWriter writer = new StreamWriter(_filePath, append: true);
-
-            // Dopóki ktoś nie wywoła Dispose()
-            while (!_cts.Token.IsCancellationRequested)
+            try
             {
-                if (_logQueue.TryDequeue(out string log))
+                // Otwieramy plik do dopisywania (Append)
+                using StreamWriter writer = new StreamWriter(_filePath, append: true);
+
+                // Dopóki ktoś nie wywoła Dispose()
+                while (!_cts.Token.IsCancellationRequested)
                 {
-                    // Zapisujemy na dysk
+                    if (_logQueue.TryDequeue(out string log))
+                    {
+                        // Zapisujemy na dysk
+                        await writer.WriteLineAsync(log);
+                        await writer.FlushAsync();
+                    }
+                    else
+                    {
+                        await Task.Delay(10);
+                    }
+                }
+
+                // Aplikacja się zamyka. Zapisujemy to, co zostało w koszu!
+                while (_logQueue.TryDequeue(out string log))
+                {
                     await writer.WriteLineAsync(log);
                 }
-                else
-                {
-                    await Task.Delay(10);
-                }
             }
-
-            // Aplikacja się zamyka. Zapisujemy to, co zostało w koszu!
-            while (_logQueue.TryDequeue(out string log))
+            catch (Exception ex)
             {
-                await writer.WriteLineAsync(log);
+                // Jeśli nie można otworzyć pliku (np. jest zablokowany przez inny proces),
+                // nie pozwalamy, by wyjątek przerwał tło i spowodował fault task.
+                System.Diagnostics.Debug.WriteLine($"Logger failed: {ex.Message}");
+
+                while (!_cts.Token.IsCancellationRequested)
+                {
+                    await Task.Delay(100);
+                }
             }
         }
 
