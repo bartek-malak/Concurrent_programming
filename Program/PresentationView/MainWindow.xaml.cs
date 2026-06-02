@@ -21,7 +21,7 @@ namespace PresentationView
     public MainWindow()
     {
       
-      InitializeComponent();
+
       MainWindowViewModel viewModel = (MainWindowViewModel)DataContext;
       double screenWidth = SystemParameters.PrimaryScreenWidth;
       double screenHeight = SystemParameters.PrimaryScreenHeight;

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Timers;
 using System.Text;
+using Timer = System.Timers.Timer;
 
 namespace Data
 {
@@ -15,6 +17,8 @@ namespace Data
         public event EventHandler<BallEventArgs>? NewPositionNotification;
         private bool _isRunning = false;
         private readonly Logger _logger;
+        private System.Timers.Timer? _timer;
+        private DateTime _lastTick;
 
         internal Ball(Vector position, double radius, Vector velocity, double mass, Logger logger)
         {
@@ -45,53 +49,57 @@ namespace Data
         {
             _isRunning = true;
 
-            Task.Run(async () =>
+            // Ustawiamy czas ostatniego przebiegu na teraz
+            _lastTick = DateTime.UtcNow;
+
+            // Timer wywoływany co ~16 ms (60 FPS)
+            _timer = new Timer(16);
+            _timer.AutoReset = true;
+            _timer.Elapsed += (sender, args) =>
             {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
+                if (!_isRunning) return;
 
-                while (_isRunning)
+                var now = DateTime.UtcNow;
+                double deltaTime = (now - _lastTick).TotalSeconds;
+                _lastTick = now;
+
+                if (deltaTime == 0)
                 {
-                    // Pobieramy dokładny czas, jaki upłynął od ostatniego obrotu pętli (w sekundach)
-                    double deltaTime = stopwatch.Elapsed.TotalSeconds;
-
-                    // Resetujemy stoper żeby mierzył czas do następnej klatki
-                    stopwatch.Restart();
-
-                    // Zabezpieczenie (gdyby pierwszy obrót wykonał się w 0 sekund)
-                    if (deltaTime == 0)
-                    {
-                        deltaTime = 0.016; // 60 klatek na sekundę
-                    }
-
-                    // Nowa pozycja = aktualna pozycja + (Prędkość * czas, który upłynął)
-                    double newX = Position.x + (Velocity.x * deltaTime);
-                    double newY = Position.y + (Velocity.y * deltaTime);
-
-                    // Aktualizujemy pozycję
-                    Position = new Vector(newX, newY);
-
-                    _logger.Log(new
-                    {
-                        BallId = this.GetHashCode(),
-                        X = Math.Round(Position.x, 2),
-                        Y = Math.Round(Position.y, 2),
-                        VelX = Math.Round(Velocity.x, 2),
-                        VelY = Math.Round(Velocity.y, 2)
-                    });
-
-                    // Powiadamiamy warstwę wyższą o zmianie pozycji
-                    NewPositionNotification?.Invoke(this, new BallEventArgs(Position));
-
-                    // Jeśli procesor się spóźni to i tak stoper nadgoni w kolejnym kroku - zmierzy większy deltaTime.
-                    await Task.Delay(16);
+                    deltaTime = 0.016; // fallback
                 }
-            });
+
+                // Nowa pozycja = aktualna pozycja + (Prędkość * czas, który upłynął)
+                double newX = Position.x + (Velocity.x * deltaTime);
+                double newY = Position.y + (Velocity.y * deltaTime);
+
+                // Aktualizujemy pozycję
+                Position = new Vector(newX, newY);
+
+                _logger.Log(new
+                {
+                    BallId = this.GetHashCode(),
+                    X = Math.Round(Position.x, 2),
+                    Y = Math.Round(Position.y, 2),
+                    VelX = Math.Round(Velocity.x, 2),
+                    VelY = Math.Round(Velocity.y, 2)
+                });
+
+                // Powiadamiamy warstwę wyższą o zmianie pozycji
+                NewPositionNotification?.Invoke(this, new BallEventArgs(Position));
+            };
+
+            _timer.Start();
         }
 
         public void Dispose()
         {
             _isRunning = false;
+            if (_timer != null)
+            {
+                _timer.Stop();
+                _timer.Dispose();
+                _timer = null;
+            }
         }
     }
 }
